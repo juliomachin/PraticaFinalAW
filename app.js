@@ -1,41 +1,30 @@
 var express=require('express');
-var app=express();
 const port = 3000;
 const bodyParser =  require("body-parser");
 
-app.use(bodyParser.urlencoded({extended:true}));
 
-app.use(bodyParser.json());
+var usuarios = require('./routes/usuarios')
+var cors = require('cors')
 
-app.use('/', express.static("templates"));
+var app=express();
+app.use(cors())
 
-const db = require('./Config/configuracion');
+// Body Parser MW
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
-db
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
+app.use('/usuarios', usuarios)
+
+app.listen(port, function() {
+  console.log('Server started on port ' + port)
+})
 
 
-app.listen(port, function(){
-	console.log("Corriendo en el puerto 3000");
-});
+app.get('/', function(req, res) {
 
-app.get('/vuejs', function(req, res) {
-
-  res.sendFile(__dirname + "/templates/peliculas.html");
+  res.sendFile(__dirname + "/templates/index.html");
   console.log(req.body);
 
 });
 
-app.post('/peliculas', function(req, res) {
-
-  res.sendFile(__dirname + "/templates/peliculas.html");
-  console.log(req.body);
-
-});
 
